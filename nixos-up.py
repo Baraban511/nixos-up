@@ -216,24 +216,6 @@ config = """\
 ################################################################################
 
 """ + config
-
-# home-manager
-config = re.sub(r"({ config(, lib)?, pkgs, \.\.\. }):\s+{", f"""\
-\\1:
-
-let
-  home-manager = fetchTarball "https://github.com/nix-community/home-manager/archive/release-{nixos_version}.tar.gz";
-in
-{{
-  # Your home-manager configuration! Check out https://rycee.gitlab.io/home-manager/ for all possible options.
-  home-manager.users.{username} = {{ pkgs, ... }}: {{
-    home.packages = with pkgs; [ hello ];
-    home.stateVersion = "{nixos_version}";
-    programs.starship.enable = true;
-  }};
-""", config)
-config = re.sub(r"imports =\s*\[", """imports = [ "${home-manager}/nixos" \n""", config)
-
 # Non-EFI systems require boot.loader.grub.device to be specified.
 if not efi:
   config = config.replace("boot.loader.grub.version = 2;", f"boot.loader.grub.version = 2;\n  boot.loader.grub.device = \"/dev/{selected_disk_name}\";\n")
